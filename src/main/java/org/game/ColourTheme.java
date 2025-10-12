@@ -26,4 +26,13 @@ public class ColourTheme {
         theme = themes.getJSONObject(currentTheme).getJSONArray("colours");
         return Color.decode(theme.getString(id));
     }
+
+    public int colourToId(Color colour, int size){
+        for(int c = 0; c < size; c++){
+            if(Color.decode(theme.getString(c)).equals(colour)){
+                return c;
+            }
+        }
+        return -1;
+    }
 }

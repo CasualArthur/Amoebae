@@ -22,7 +22,7 @@ public class Level {
     ColourTheme colourTheme;
     JSONArray tiles;
     JSONArray regions;
-    JSONArray fixed;
+    //JSONArray fixed;
     public GameFrame gameFrame;
     JPanel fieldPanel;
     JPanel colourPanel;
@@ -43,7 +43,6 @@ public class Level {
         size = level.getInt("size");
         tiles = level.getJSONArray("tiles");
         regions = level.getJSONArray("regions");
-        fixed = level.getJSONArray("fixed");
         filledTiles = 0;
         currentColour=Color.BLUE;
     }
@@ -54,23 +53,6 @@ public class Level {
         fieldPanel = new JPanel();
         fieldPanel.setLayout(new GridLayout(size, size));
         fieldPanel.setBounds(107,89,350,350);
-
-        for (int r = 0; r < size; r++) {
-            JSONArray row = tiles.getJSONArray(r);
-            for(int j = 0; j < size; j++){
-                JButton cell = new JButton(String.valueOf(row.getInt(j)));
-
-                if(fixed.getJSONArray(r).getInt(j)==1){
-                    filledTiles++;
-                    cell.setBackground(Color.BLACK);
-                    cell.setEnabled(false);
-                }else{
-                    cell.setBackground(Color.WHITE);
-                    cell.addActionListener(e -> changeColour(cell));
-                }
-                fieldPanel.add(cell);
-            }
-        }
 
         colourPanel = new JPanel();
         colourPanel.setLayout(new GridLayout(size, 1));
@@ -87,27 +69,49 @@ public class Level {
             colourPanel.add(palate);
         }
 
+        for (int r = 0; r < size; r++) {
+            JSONArray row = tiles.getJSONArray(r);
+            for(int c = 0; c < size; c++){
+                JButton cell = new JButton(String.valueOf(row.getInt(c)));
+
+                if(tiles.getJSONArray(r).getInt(c)>=0){
+                    filledTiles++;
+                    cell.setBackground(colourTheme.idToColour(tiles.getJSONArray(r).getInt(c)));
+                    cell.setEnabled(false);
+                }else{
+                    cell.setBackground(Color.WHITE);
+                    int finalR = r;
+                    int finalC = c;
+                    cell.addActionListener(e -> changeColour(cell, finalR, finalC));
+                }
+                fieldPanel.add(cell);
+            }
+        }
+
+
+
         gameFrame.add(colourPanel);
         gameFrame.add(fieldPanel);
         gameFrame.setVisible(true);
     }
 
-    void changeColour(JButton cell){
+    void changeColour(JButton cell, int r, int c){
         if(!cell.getBackground().equals(currentColour)){
+            if(cell.getBackground().equals(Color.WHITE)) filledTiles++;
             cell.setBackground(currentColour);
-            filledTiles++;
+            tiles.getJSONArray(r).put(c, colourTheme.colourToId(currentColour, size));
             if(filledTiles==size*size){
                 checkSolution();
             }
         }else{
             cell.setBackground(Color.WHITE);
             filledTiles--;
+            tiles.getJSONArray(r).put(c, -1);
         }
 
     }
 
     void checkSolution(){
-
         for(int r = 0; r < size; r++){
             JSONArray row = tiles.getJSONArray(r);
             Set<Object> colours = new HashSet<>();
@@ -118,7 +122,6 @@ public class Level {
                 return;
             }
         }
-
         for(int c = 0; c < size; c++){
             Set<Object> colours = new HashSet<>();
             for(int r = 0; r < size; r++){
@@ -154,5 +157,6 @@ public class Level {
 
     void markCompleted(){
         //Do stuff
+        System.out.println("YOU WOOOOON!!!");
     }
 }
