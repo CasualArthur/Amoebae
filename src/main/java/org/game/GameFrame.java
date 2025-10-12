@@ -16,6 +16,7 @@ public class GameFrame extends JFrame {
         this.setLayout(null);
         this.setSize(576,576);
         this.setResizable(false);
+        this.setLocationRelativeTo(null);
 
         //displayMenu();
     }
