@@ -5,6 +5,8 @@ import org.json.JSONObject;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -26,6 +28,7 @@ public class Level {
     public GameFrame gameFrame;
     JPanel fieldPanel;
     JPanel colourPanel;
+    boolean completed;
 
 
     Level(int id){
@@ -43,6 +46,7 @@ public class Level {
         size = level.getInt("size");
         tiles = level.getJSONArray("tiles");
         regions = level.getJSONArray("regions");
+        completed = level.getBoolean("completed");
         filledTiles = 0;
         currentColour=Color.BLUE;
     }
@@ -155,8 +159,21 @@ public class Level {
         markCompleted();
     }
 
-    void markCompleted(){
-        //Do stuff
+    void markCompleted() {
+
+        try {
+            int id = Integer.parseInt(name.substring(6)) - 1;
+            level.put("completed", true);
+            levelsArray.put(id, level);
+            FileWriter writer = new FileWriter("src/main/resources/Levels.json", false);
+            writer.write(levelsArray.toString());
+            writer.close();
+        }
+
+        catch(IOException ie) {
+            ie.printStackTrace();
+        }
+
         System.out.println("YOU WOOOOON!!!");
     }
 }
