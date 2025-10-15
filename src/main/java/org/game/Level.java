@@ -28,6 +28,7 @@ public class Level {
     public GameFrame gameFrame;
     JPanel fieldPanel;
     JPanel colourPanel;
+    JPanel backPanel;
     boolean completed;
 
 
@@ -62,7 +63,16 @@ public class Level {
         colourPanel.setLayout(new GridLayout(size, 1));
         colourPanel.setBounds(480, 89, 50, 350);
 
+        backPanel = new JPanel();
+        backPanel.setLayout(new GridLayout(size, 1));
+        backPanel.setBounds(50, 20, 100, 220);
+
         colourTheme = new ColourTheme();
+
+        JButton backButton = new JButton("Back");
+        backButton.setFont(new Font("Calibri", Font.PLAIN, 30));
+        backButton.addActionListener(e -> gameFrame.displayMenu());
+        backPanel.add(backButton);
 
         for(int id = 0; id < size; id++){
             JButton palate = new JButton();
@@ -96,6 +106,7 @@ public class Level {
 
         gameFrame.add(colourPanel);
         gameFrame.add(fieldPanel);
+        gameFrame.add(backPanel);
         gameFrame.setVisible(true);
     }
 
