@@ -20,11 +20,11 @@ public class Level {
     String name;
     int size;
     int filledTiles;
-    Color currentColour;
+    int currentCell;
     ColourTheme colourTheme;
     JSONArray tiles;
     JSONArray regions;
-    //JSONArray fixed;
+    JSONArray fixed;
     public GameFrame gameFrame;
     JPanel fieldPanel;
     JPanel colourPanel;
@@ -47,9 +47,10 @@ public class Level {
         size = level.getInt("size");
         tiles = level.getJSONArray("tiles");
         regions = level.getJSONArray("regions");
+        fixed = level.getJSONArray("fixed");
         completed = level.getBoolean("completed");
         filledTiles = 0;
-        currentColour=Color.BLUE;
+        currentCell = 0;
     }
 
     void display(){
@@ -77,27 +78,34 @@ public class Level {
         for(int id = 0; id < size; id++){
             JButton palate = new JButton();
             Color colour = colourTheme.idToColour(id);
-            palate.setBackground(colour);
+            palate.setBackground(Color.WHITE);
+            palate.setText(String.valueOf(id));
             final int idx=id;
-            palate.addActionListener(e -> currentColour=colourTheme.idToColour(idx));
+            palate.addActionListener(e -> currentCell = idx);
             colourPanel.add(palate);
         }
 
         for (int r = 0; r < size; r++) {
             JSONArray row = tiles.getJSONArray(r);
             for(int c = 0; c < size; c++){
-                JButton cell = new JButton(String.valueOf(row.getInt(c)));
+                JButton cell = new JButton();
+                cell.setFont(new Font("Calibri", Font.PLAIN, 20));
+                //cell.setText(html);
+                cell.setForeground(Color.WHITE);
 
-                if(tiles.getJSONArray(r).getInt(c)>=0){
+
+                if(fixed.getJSONArray(r).getInt(c)==1){
                     filledTiles++;
-                    cell.setBackground(colourTheme.idToColour(tiles.getJSONArray(r).getInt(c)));
+                    //cell.setBackground(colourTheme.idToColour(tiles.getJSONArray(r).getInt(c)));
                     cell.setEnabled(false);
+                    cell.setText(String.valueOf(row.getInt(c)));
                 }else{
-                    cell.setBackground(Color.WHITE);
+                    //cell.setBackground(Color.WHITE);
                     int finalR = r;
                     int finalC = c;
-                    cell.addActionListener(e -> changeColour(cell, finalR, finalC));
+                    cell.addActionListener(e -> changeCell(cell, finalR, finalC));
                 }
+                cell.setBackground(colourTheme.idToColour(regions.getJSONArray(r).getInt(c)));
                 fieldPanel.add(cell);
             }
         }
@@ -110,11 +118,11 @@ public class Level {
         gameFrame.setVisible(true);
     }
 
-    void changeColour(JButton cell, int r, int c){
-        if(!cell.getBackground().equals(currentColour)){
-            if(cell.getBackground().equals(Color.WHITE)) filledTiles++;
-            cell.setBackground(currentColour);
-            tiles.getJSONArray(r).put(c, colourTheme.colourToId(currentColour, size));
+    void changeCell(JButton cell, int r, int c){
+        if(!cell.getText().equals(String.valueOf(currentCell))){
+            if(cell.getText().isEmpty()) filledTiles++;
+            cell.setText(String.valueOf(currentCell));
+            tiles.getJSONArray(r).put(c, currentCell);
             if(filledTiles==size*size){
                 checkSolution();
             }
