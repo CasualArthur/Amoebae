@@ -127,7 +127,8 @@ public class Level {
                 checkSolution();
             }
         }else{
-            cell.setBackground(Color.WHITE);
+            //cell.setBackground(Color.WHITE);
+            cell.setText("");
             filledTiles--;
             tiles.getJSONArray(r).put(c, -1);
         }
