@@ -1,6 +1,7 @@
 package org.game;
 
 import javax.swing.*;
+import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -71,27 +72,31 @@ public class GameFrame extends JFrame {
             String content = new Scanner(is, StandardCharsets.UTF_8).useDelimiter("\\A").next();
             JSONArray levelsArray = new JSONArray(content);
 
-            this.setLayout(new FlowLayout());
+            //this.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 20));
+            //this.setLayout(null);
+            JPanel levelPanel = new JPanel();
+            levelPanel.setLayout(new GridLayout(1,levelsArray.length(), 10, 10));
+            levelPanel.setBounds(150, 50, levelsArray.length()*60, 60);
 
             for (int i = 0; i < levelsArray.length(); i++) {
                 JSONObject level = levelsArray.getJSONObject(i);
 
-                String name = level.getString("name");
-                int size = level.getInt("size");
-                JSONArray tiles = level.getJSONArray("tiles");
-                JSONArray regions = level.getJSONArray("regions");
-
-
-                JButton levelButton = new JButton(name);
+                JButton levelButton = new JButton(String.valueOf(i));
+                levelButton.setFont(new Font("Calibri", Font.PLAIN, 30));
+                if(level.getBoolean("completed")) levelButton.setBackground(Color.GREEN);
+                else levelButton.setBackground(Color.YELLOW);
+                levelButton.setBorder(new LineBorder(Color.BLACK));
+                //levelButton.setSize(50, 50);
                 final int id=i;
                 levelButton.addActionListener(e -> this.displayLevel(id));
 
-                this.add(levelButton); //change to a panel later
+                //this.add(levelButton); //change to a panel later
+                levelPanel.add(levelButton);
 
-                System.out.println("Level: " + name + ", size: " + size);
 
 
             }
+            this.add(levelPanel);
             this.setVisible(true);
         } catch (Exception e) {
             e.printStackTrace();
