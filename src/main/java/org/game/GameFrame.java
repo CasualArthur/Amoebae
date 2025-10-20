@@ -19,7 +19,6 @@ public class GameFrame extends JFrame {
         this.setResizable(false);
         this.setLocationRelativeTo(null);
 
-        //displayMenu();
     }
 
     void displayMenu(){
@@ -27,16 +26,26 @@ public class GameFrame extends JFrame {
         this.repaint();
         this.setLayout(null);
 
-        JButton playButton = new JButton("Play");
-        playButton.setFont(new Font("Calibri", Font.PLAIN, 30));
+        RoundedButton playButton = new RoundedButton();
+        playButton.setPreferredSize(new Dimension(200, 100));
+        playButton.setRadius(20);
+        playButton.setText("Play");
+        playButton.setBackground(Color.decode("0x85A4E4"));
+        playButton.bgColour=Color.decode("0x85A4E4");
         playButton.addActionListener(e -> this.displayLevels());
 
-        JButton settingsButton = new JButton("Settings");
-        settingsButton.setFont(new Font("Calibri", Font.PLAIN, 30));
+        RoundedButton settingsButton = new RoundedButton();
+        settingsButton.setPreferredSize(new Dimension(200, 100));
+        settingsButton.setRadius(20);
+        settingsButton.setText("Settings");
         settingsButton.addActionListener(e -> this.displaySettings());
 
-        JButton rulesButton = new JButton("Rules");
-        rulesButton.setFont(new Font("Calibri", Font.PLAIN, 30));
+        RoundedButton rulesButton = new RoundedButton();
+        rulesButton.setPreferredSize(new Dimension(200, 100));
+        rulesButton.setRadius(20);
+        rulesButton.setText("Rules");
+        rulesButton.setBackground(Color.decode("0x85A4E4"));
+        rulesButton.bgColour=Color.decode("0x85A4E4");
         rulesButton.addActionListener(e -> this.displayRules());
 
         JLabel label = new JLabel("Amoebae");
@@ -47,6 +56,13 @@ public class GameFrame extends JFrame {
         JPanel buttonPanel = new JPanel();
         buttonPanel.setBounds(128,168,300,300);
         buttonPanel.setLayout(new GridLayout(3,1, 30, 30));
+        buttonPanel.setOpaque(false);
+
+        String resourcePath = "/images/planks.jpg";
+        java.net.URL imgURL = getClass().getResource(resourcePath);
+
+        assert imgURL != null;
+        setContentPane(new JLabel(new ImageIcon(imgURL)));
 
         buttonPanel.add(playButton);
         buttonPanel.add(settingsButton);
@@ -72,31 +88,55 @@ public class GameFrame extends JFrame {
             String content = new Scanner(is, StandardCharsets.UTF_8).useDelimiter("\\A").next();
             JSONArray levelsArray = new JSONArray(content);
 
-            //this.setLayout(new FlowLayout(FlowLayout.CENTER, 20, 20));
-            //this.setLayout(null);
+            JPanel backPanel = new JPanel();
+            backPanel.setLayout(new GridBagLayout());
+            backPanel.setBounds(107, 460, 350, 58);
+            backPanel.setOpaque(false);
+            RoundedButton backButton = new RoundedButton();
+            backButton.setRadius(20);
+            backButton.setPreferredSize(new Dimension(140, 58));
+            backButton.setText("Back");
+            backButton.bgColour=Color.WHITE;
+            backButton.addActionListener(e -> this.displayMenu());
+            backPanel.add(backButton);
+
             JPanel levelPanel = new JPanel();
-            levelPanel.setLayout(new GridLayout(1,levelsArray.length(), 10, 10));
-            levelPanel.setBounds(150, 50, levelsArray.length()*60, 60);
+            levelPanel.setLayout(new GridLayout(levelsArray.length(),1, 10, 10));
+            levelPanel.setBounds(80, 80, 200, 110*levelsArray.length());
+            levelPanel.setOpaque(false);
+
+            JPanel extraPanel = new JPanel();
+            extraPanel.setLayout(new GridLayout(levelsArray.length(),1, 10, 10));
+            extraPanel.setBounds(320, 80, 200, 110*levelsArray.length());
+            extraPanel.setOpaque(false);
 
             for (int i = 0; i < levelsArray.length(); i++) {
                 JSONObject level = levelsArray.getJSONObject(i);
-
-                JButton levelButton = new JButton(String.valueOf(i));
-                levelButton.setFont(new Font("Calibri", Font.PLAIN, 30));
-                if(level.getBoolean("completed")) levelButton.setBackground(Color.GREEN);
-                else levelButton.setBackground(Color.YELLOW);
+                RoundedButton levelButton = new RoundedButton();
+                levelButton.setRadius(20);
+                levelButton.setPreferredSize(new Dimension(200, 100));
+                levelButton.setText("Level " + (i+1));
+                if(level.getBoolean("completed")) levelButton.setBgColour(Color.decode("0x88F18B"));
+                else{
+                    if(i%2==0) levelButton.setBgColour(Color.decode("0x85A4E4"));
+                    else levelButton.setBgColour(Color.WHITE);
+                }
                 levelButton.setBorder(new LineBorder(Color.BLACK));
-                //levelButton.setSize(50, 50);
                 final int id=i;
                 levelButton.addActionListener(e -> this.displayLevel(id));
 
-                //this.add(levelButton); //change to a panel later
                 levelPanel.add(levelButton);
 
-
-
+                String size = "Board size: " + level.getInt("size") + "x" + level.getInt("size");
+                String difficulty = "Difficulty: " + level.getString("difficulty");
+                String completed = "Completed: " + level.getBoolean("completed");
+                JLabel extra = new JLabel("<html>"+size+"<br/>"+difficulty+"<br/>"+completed+"<br/></html>");
+                extra.setFont(new Font("Calibri", Font.BOLD, 20));
+                extraPanel.add(extra);
             }
+            this.add(extraPanel);
             this.add(levelPanel);
+            this.add(backPanel);
             this.setVisible(true);
         } catch (Exception e) {
             e.printStackTrace();
@@ -118,9 +158,6 @@ public class GameFrame extends JFrame {
         this.getContentPane().removeAll();
         this.repaint();
         this.setLayout(null);
-
-        //Should add some volume, reset progress button?, maybe different themes (if there's enough time)
-        //idk what else
     }
 
     void displayRules(){
@@ -135,16 +172,18 @@ public class GameFrame extends JFrame {
 
         JLabel explanation = new JLabel();
         explanation.setText("In each row, column and region all colours must be distinct.");
-        //maybe make a new file with full text, also fix the cutoff
         explanation.setBounds(0, 100, 300, 300);
         explanation.setVerticalAlignment(JLabel.TOP);
 
-        //Should add some example image
         this.add(rules);
         this.add(explanation);
         this.setVisible(true);
 
     }
+
+
+
+
 
 }
 
