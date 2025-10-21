@@ -222,18 +222,36 @@ public class GameFrame extends JFrame {
         this.repaint();
         this.setLayout(null);
 
+        JPanel backPanel = new JPanel();
+        backPanel.setLayout(new GridBagLayout());
+        backPanel.setBounds(107, 460, 350, 58);
+        backPanel.setOpaque(false);
+        RoundedButton backButton = new RoundedButton();
+        backButton.setRadius(20);
+        backButton.setPreferredSize(new Dimension(140, 58));
+        backButton.setText("Back");
+        backButton.bgColour=Color.WHITE;
+        backButton.addActionListener(e -> this.displayMenu());
+        backPanel.add(backButton);
+
 
         JLabel rules = new JLabel("Rules");
-        rules.setFont(new Font("Calibri", Font.PLAIN, 50));
-        rules.setBounds(0,0,300,100);
+        rules.setFont(new Font("Calibri", Font.PLAIN, 100));
+        //rules.setForeground(Color.decode("#d9f3fc"));
+        rules.setBounds(170,0,300,100);
 
         JLabel explanation = new JLabel();
-        explanation.setText("In each row, column and region all colours must be distinct.");
-        explanation.setBounds(0, 100, 300, 300);
+        explanation.setText( "<html> • In each row, column and region all numbers must be distinct. <br> • Place a number in each cell to complete the board, by selecting one on the right hand side and applying it to a cell. <br> • Multiple valid solutions might be possible. <br> • You can reset any board by pressing the reset button.  </html>");
+        explanation.setFont(new Font("Calibri", Font.BOLD, 27));
+        //explanation.setForeground(Color.decode("#d9f3fc"));
+
+        explanation.setBounds(100, 100, 400, 350);
         explanation.setVerticalAlignment(JLabel.TOP);
+        
 
         this.add(rules);
         this.add(explanation);
+        this.add(backPanel);
         this.setVisible(true);
 
     }
