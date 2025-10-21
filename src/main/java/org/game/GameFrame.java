@@ -7,21 +7,29 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 
+
 import org.json.*;
 
 public class GameFrame extends JFrame {
+        MusicPlayer play;
 
-    GameFrame(){
+
+    GameFrame(MusicPlayer play){
         this.setTitle("Amoebae");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setLayout(null);
         this.setSize(576,576);
         this.setResizable(false);
         this.setLocationRelativeTo(null);
+        this.play = play;
+        
+        
 
+        //displayMenu();
     }
 
     void displayMenu(){
+
         this.getContentPane().removeAll();
         this.repaint();
         this.setLayout(null);
@@ -158,6 +166,55 @@ public class GameFrame extends JFrame {
         this.getContentPane().removeAll();
         this.repaint();
         this.setLayout(null);
+
+        JPanel backPanel = new JPanel();
+        backPanel.setLayout(new GridBagLayout());
+        backPanel.setBounds(107, 460, 350, 58);
+        backPanel.setOpaque(false);
+        RoundedButton backButton = new RoundedButton();
+        backButton.setRadius(20);
+        backButton.setPreferredSize(new Dimension(140, 58));
+        backButton.setText("Back");
+        backButton.bgColour=Color.WHITE;
+        backButton.addActionListener(e -> this.displayMenu());
+        backPanel.add(backButton);
+
+        
+        RoundedButton volume0 = new RoundedButton();
+        volume0.setRadius(20);
+        volume0.setPreferredSize(new Dimension(140, 58));
+        volume0.setText("Volume: 0%");
+        volume0.bgColour=Color.WHITE;
+        volume0.addActionListener(e -> play.changeVolume(0));
+        RoundedButton volume50 = new RoundedButton();
+        volume50.setRadius(20);
+        volume50.setPreferredSize(new Dimension(140, 58));
+        volume50.setText("volume: 50%");
+        volume50.bgColour=Color.WHITE;
+        volume50.addActionListener(e -> play.changeVolume(50));
+        RoundedButton volume100 = new RoundedButton();
+        volume100.setRadius(20);
+        volume100.setPreferredSize(new Dimension(140, 58));
+        volume100.setText("volume: 100%");
+        volume100.bgColour=Color.WHITE;
+        volume100.addActionListener(e -> play.changeVolume(100));
+        
+        JPanel settingsPanel = new JPanel();
+        settingsPanel.setBounds(128,168,300,300);
+        settingsPanel.setLayout(new GridLayout(3,1, 30, 30));
+        backPanel.setOpaque(false);
+
+        settingsPanel.add(volume0);
+        settingsPanel.add(volume50);
+        settingsPanel.add(volume100);
+
+        this.add(settingsPanel);
+        this.add(backPanel);
+        this.setVisible(true);
+        
+
+        //Should add some volume, reset progress button?, maybe different themes (if there's enough time)
+        //idk what else
     }
 
     void displayRules(){

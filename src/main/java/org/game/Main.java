@@ -9,7 +9,13 @@ public class Main {
 
         UIManager.put("Button.disabledText", new ColorUIResource(Color.BLACK));
 
-        GameFrame gameFrame = new GameFrame();
+        MusicPlayer play = new MusicPlayer();
+        
+
+        GameFrame gameFrame = new GameFrame(play);
         gameFrame.displayMenu();
+        play.playMusic();
+        
+        
     }
 }
