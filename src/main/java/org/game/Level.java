@@ -10,6 +10,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Scanner;
@@ -34,15 +37,11 @@ public class Level {
     JPanel backPanel;
     JPanel extraPanel;
     boolean completed;
+    JWindow window;
 
-    Level(int id){
-        InputStream is = GameFrame.class.getClassLoader().getResourceAsStream("Levels.json");
-        if (is == null) {
-            System.err.println("Levels.json not found");
-            return;
-        }
-
-        String content = new Scanner(is, StandardCharsets.UTF_8).useDelimiter("\\A").next();
+    Level(int id) throws IOException {
+        Path path = Paths.get("src/main/resources/Levels.json");
+        String content = Files.readString(path, StandardCharsets.UTF_8);
         levelsArray = new JSONArray(content);
         numbers = new ArrayList<>();
 
@@ -54,12 +53,12 @@ public class Level {
         fixed = level.getJSONArray("fixed");
         completed = level.getBoolean("completed");
 
-
+        window = new JWindow(gameFrame);
         filledTiles = 0;
         currentCell = 1;
     }
 
-    void display(){
+    void display() throws IOException {
         gameFrame.setLayout(null);
         fieldPanel = new JPanel();
         fieldPanel.setLayout(new GridLayout(size, size));
@@ -85,7 +84,10 @@ public class Level {
         backButton.setPreferredSize(new Dimension(140, 58));
         backButton.setBgColour(Color.WHITE);
 
-        backButton.addActionListener(e -> gameFrame.displayLevels());
+        backButton.addActionListener(e -> {
+            window.setVisible(false);
+            gameFrame.displayLevels();
+        });
         extraPanel.add(backButton);
 
         RoundedButton resetButton = new RoundedButton();
@@ -93,7 +95,14 @@ public class Level {
         resetButton.setPreferredSize(new Dimension(140, 58));
         resetButton.setText("Reset");
         resetButton.setBgColour(Color.WHITE);
-        resetButton.addActionListener(e -> gameFrame.displayLevel(levelId));
+        resetButton.addActionListener(e -> {
+            try {
+                window.setVisible(false);
+                gameFrame.displayLevel(levelId);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
         extraPanel.add(resetButton);
 
 
@@ -177,6 +186,7 @@ public class Level {
     }
 
     void checkSolution(){
+
         for(int r = 0; r < size; r++){
             JSONArray row = tiles.getJSONArray(r);
             Set<Object> colours = new HashSet<>();
@@ -235,6 +245,17 @@ public class Level {
             ie.printStackTrace();
         }
 
-        System.out.println("YOU WOOOOON!!!");
+        JPanel panel = new JPanel();
+        JLabel salut = new JLabel("Level complete!");
+        salut.setFont(new Font("Calibri", Font.PLAIN, 25));
+        panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        panel.setBackground(Color.WHITE);
+        panel.add(salut);
+        window.add(panel);
+
+        window.setVisible(true);
+        window.setBounds(150, 188, 276, 200);
+        window.setLocationRelativeTo(gameFrame);
+
     }
 }

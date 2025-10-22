@@ -15,14 +15,16 @@ class MusicPlayer {
     Clip clip;
     void playMusic(){
         try  {
-            String filename = "PlaceholderSong.wav";
-            URL defaultSound = getClass().getResource(filename);
-            AudioInputStream audioInputStream =
-                AudioSystem.getAudioInputStream(defaultSound);
+            InputStream is = GameFrame.class.getClassLoader().getResourceAsStream("PlaceholderSong.wav");
+            if (is == null) {
+                System.err.println("PlaceholderSong.wav not found");
+                return;
+            }
+            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(is);
             clip = AudioSystem.getClip();
             clip.open(audioInputStream);
-            FloatControl gainControl = 
-                (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+            FloatControl gainControl =
+                    (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
             gainControl.setValue(-80.0f);
             clip.start();
             System.out.println(clip.getMicrosecondLength());
@@ -47,8 +49,8 @@ class MusicPlayer {
         }
     }
     void changeVolume(float volumePercent){
-        clip.stop();
-        clip.flush();
+        //clip.stop();
+        //clip.flush();
         FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
 
         volumePercent = Math.max(0, Math.min(volumePercent, 100));
@@ -57,11 +59,16 @@ class MusicPlayer {
             gainControl.setValue(gainControl.getMinimum()); // Silence
         } else {
             float dB = (float) (20.0 * Math.log10(volumePercent / 100.0));
-        
+
             dB = Math.max(dB, gainControl.getMinimum());
             gainControl.setValue(dB);
         }
-        clip.loop(Clip.LOOP_CONTINUOUSLY);
+        //clip.loop(Clip.LOOP_CONTINUOUSLY);
+    }
+
+    int getVolume(){
+        FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+        return (int) (100.0*gainControl.getValue());
     }
 
 }

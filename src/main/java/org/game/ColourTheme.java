@@ -3,8 +3,12 @@ package org.game;
 import org.json.JSONArray;
 
 import java.awt.*;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Scanner;
 
 public class ColourTheme {
@@ -13,15 +17,15 @@ public class ColourTheme {
     JSONArray theme;
 
 
-    public Color idToColour(int id){
-        InputStream is = GameFrame.class.getClassLoader().getResourceAsStream("Themes.json");
-        if (is == null) {
-            System.err.println("Themes.json not found");
-            return Color.WHITE;
-        }
+    public Color idToColour(int id) throws IOException {
+        Path path = Paths.get("src/main/resources/Themes.json");
+        String content = Files.readString(path, StandardCharsets.UTF_8);
+        JSONArray themes = new JSONArray(content);
 
-        String content = new Scanner(is, StandardCharsets.UTF_8).useDelimiter("\\A").next();
-        themes = new JSONArray(content);
+        path = Paths.get("src/main/resources/Preferences.json");
+        content = Files.readString(path, StandardCharsets.UTF_8);
+        JSONArray preferences = new JSONArray(content);
+        currentTheme = preferences.getJSONObject(0).getInt("theme");
 
         theme = themes.getJSONObject(currentTheme).getJSONArray("colours");
         return Color.decode(theme.getString(id));
