@@ -1,19 +1,16 @@
 package org.game;
 
-import javax.swing.*;
-import javax.swing.border.LineBorder;
+
 import java.awt.*;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Scanner;
-
-
+import javax.swing.*;
+import javax.swing.border.LineBorder;
 import org.json.*;
 
 public class GameFrame extends JFrame {
@@ -54,7 +51,7 @@ public class GameFrame extends JFrame {
         playButton.setRadius(20);
         playButton.setText("Play");
         playButton.setBackground(Color.decode("0x85A4E4"));
-        playButton.bgColour=Color.decode("0x85A4E4");
+        playButton.bgColour = Color.decode("0x85A4E4");
         playButton.addActionListener(e -> this.displayLevels());
 
         RoundedButton settingsButton = new RoundedButton();
@@ -74,7 +71,7 @@ public class GameFrame extends JFrame {
         rulesButton.setRadius(20);
         rulesButton.setText("Rules");
         rulesButton.setBackground(Color.decode("0x85A4E4"));
-        rulesButton.bgColour=Color.decode("0x85A4E4");
+        rulesButton.bgColour = Color.decode("0x85A4E4");
         rulesButton.addActionListener(e -> this.displayRules());
 
         JLabel label = new JLabel("Amoebae");
@@ -83,8 +80,8 @@ public class GameFrame extends JFrame {
         label.setHorizontalAlignment(JLabel.CENTER);
 
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setBounds(128,168,300,300);
-        buttonPanel.setLayout(new GridLayout(3,1, 30, 30));
+        buttonPanel.setBounds(128, 168, 300, 300);
+        buttonPanel.setLayout(new GridLayout(3, 1, 30, 30));
         buttonPanel.setOpaque(false);
 
         String resourcePath = "/images/planks.jpg";
@@ -101,7 +98,7 @@ public class GameFrame extends JFrame {
         this.add(buttonPanel);
         this.setVisible(true);
 
-        if(!isPlaying) {
+        if (!isPlaying) {
             isPlaying = true;
 
             Main.playMusic();
@@ -134,7 +131,7 @@ public class GameFrame extends JFrame {
             backButton.setRadius(20);
             backButton.setPreferredSize(new Dimension(140, 58));
             backButton.setText("Back");
-            backButton.bgColour=Color.WHITE;
+            backButton.bgColour = Color.WHITE;
             backButton.addActionListener(e -> {
                 try {
                     this.displayMenu();
@@ -145,13 +142,13 @@ public class GameFrame extends JFrame {
             backPanel.add(backButton);
 
             JPanel levelPanel = new JPanel();
-            levelPanel.setLayout(new GridLayout(levelsArray.length(),1, 10, 10));
-            levelPanel.setBounds(80, 80, 200, 110*levelsArray.length());
+            levelPanel.setLayout(new GridLayout(levelsArray.length(), 1, 10, 10));
+            levelPanel.setBounds(80, 80, 200, 110 * levelsArray.length());
             levelPanel.setOpaque(false);
 
             JPanel extraPanel = new JPanel();
-            extraPanel.setLayout(new GridLayout(levelsArray.length(),1, 10, 10));
-            extraPanel.setBounds(320, 80, 200, 110*levelsArray.length());
+            extraPanel.setLayout(new GridLayout(levelsArray.length(), 1, 10, 10));
+            extraPanel.setBounds(320, 80, 200, 110 * levelsArray.length());
             extraPanel.setOpaque(false);
 
             for (int i = 0; i < levelsArray.length(); i++) {
@@ -159,14 +156,18 @@ public class GameFrame extends JFrame {
                 RoundedButton levelButton = new RoundedButton();
                 levelButton.setRadius(20);
                 levelButton.setPreferredSize(new Dimension(200, 100));
-                levelButton.setText("Level " + (i+1));
-                if(level.getBoolean("completed")) levelButton.setBgColour(Color.decode("0xFFD733"));
-                else{
-                    if(i%2==0) levelButton.setBgColour(Color.decode("0x85A4E4"));
-                    else levelButton.setBgColour(Color.WHITE);
+                levelButton.setText("Level " + (i + 1));
+                if (level.getBoolean("completed")) {
+                    levelButton.setBgColour(Color.decode("0xFFD733"));
+                } else {
+                    if (i % 2 == 0) {
+                        levelButton.setBgColour(Color.decode("0x85A4E4"));
+                    } else {
+                        levelButton.setBgColour(Color.WHITE);
+                    }
                 }
                 levelButton.setBorder(new LineBorder(Color.BLACK));
-                final int id=i;
+                final int id = i;
                 levelButton.addActionListener(e -> {
                     try {
                         this.displayLevel(id);
@@ -217,7 +218,7 @@ public class GameFrame extends JFrame {
         backButton.setRadius(20);
         backButton.setPreferredSize(new Dimension(140, 58));
         backButton.setText("Back");
-        backButton.bgColour=Color.WHITE;
+        backButton.bgColour = Color.WHITE;
         backButton.addActionListener(e -> {
             try {
                 this.displayMenu();
@@ -275,15 +276,19 @@ public class GameFrame extends JFrame {
 
 
         JPanel settingsPanel = new JPanel();
-        settingsPanel.setBounds(88,0,400,400);
+        settingsPanel.setBounds(88, 100, 400, 400);
         settingsPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
+
+        JPanel themePanel = new JPanel();
+        themePanel.setBounds(88, 300, 400, 400);
+        themePanel.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
 
         themeId = preferences.getJSONObject(0).getInt("theme");
         volume = preferences.getJSONObject(0).getInt("volume");
         slider.setValue(volume);
         JSONObject theme = themes.getJSONObject(themeId);
         buttons = new ArrayList<>();
-        for(int i=0; i<3; i++){
+        for (int i = 0; i < 3; i++){
             RoundedButton palette = new RoundedButton();
             palette.setEnabled(false);
             palette.setRadius(500);
@@ -298,20 +303,24 @@ public class GameFrame extends JFrame {
         switchTheme.addActionListener(e -> switchTheme(themes.length()));
 
         //settingsPanel.setLayout(new GridLayout(3,1, 30, 30));
-        settingsPanel.add(new JLabel("Volume")).setFont(new Font("Calibri", Font.PLAIN, 25));;
+        settingsPanel.add(new JLabel("Volume")).setFont(new Font("Calibri", Font.BOLD, 30));;
         settingsPanel.add(slider);
-        settingsPanel.add(new JLabel("Theme")).setFont(new Font("Calibri", Font.PLAIN, 25));
-        for(int i=0; i<3; i++) settingsPanel.add(buttons.get(i));
-        settingsPanel.add(switchTheme);
+        themePanel.add(new JLabel("Theme")).setFont(new Font("Calibri", Font.PLAIN, 25));
+        for (int i = 0; i < 3; i++) {
+            themePanel.add(buttons.get(i));
+        }
+        themePanel.add(switchTheme);
 
 
 
         settingsPanel.setOpaque(false);
         backPanel.setOpaque(false);
+        themePanel.setOpaque(false);
 
 
         this.add(settingsPanel);
         this.add(backPanel);
+        this.add(themePanel);
         this.setVisible(true);
 
     }
@@ -329,7 +338,7 @@ public class GameFrame extends JFrame {
         backButton.setRadius(20);
         backButton.setPreferredSize(new Dimension(140, 58));
         backButton.setText("Back");
-        backButton.bgColour=Color.WHITE;
+        backButton.bgColour = Color.WHITE;
         backButton.addActionListener(e -> {
             try {
                 this.displayMenu();
@@ -343,7 +352,7 @@ public class GameFrame extends JFrame {
         JLabel rules = new JLabel("Rules");
         rules.setFont(new Font("Calibri", Font.PLAIN, 100));
         //rules.setForeground(Color.decode("#d9f3fc"));
-        rules.setBounds(170,0,300,100);
+        rules.setBounds(170, 0, 300, 100);
 
         JLabel explanation = new JLabel();
         explanation.setText( "<html> • In each row, column and region all numbers must be distinct. " +
@@ -368,8 +377,9 @@ public class GameFrame extends JFrame {
             //level.put("completed", true);
             //levelsArray.put(id, level);
             themeId++;
-            if(themeId==numberOfThemes) themeId=0;
-
+            if (themeId == numberOfThemes) {
+                themeId = 0;
+            }
             Path path = Paths.get("src/main/resources/Preferences.json");
             String content = Files.readString(path, StandardCharsets.UTF_8);
             JSONArray preferences = new JSONArray(content);
@@ -388,12 +398,12 @@ public class GameFrame extends JFrame {
 
             JSONObject theme = themes.getJSONObject(themeId);
 
-            for(int i=0; i<3; i++){
+            for (int i = 0; i < 3; i++){
                 buttons.get(i).setBgColour(Color.decode(theme.getJSONArray("colours").getString(i)));
             }
         }
 
-        catch(IOException ie) {
+        catch (IOException ie) {
             ie.printStackTrace();
         }
     }

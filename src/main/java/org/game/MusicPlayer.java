@@ -68,7 +68,7 @@ class MusicPlayer {
 
     int getVolume(){
         FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
-        return (int) (100.0*gainControl.getValue());
+        return (int) (100.0 * gainControl.getValue());
     }
 
 }

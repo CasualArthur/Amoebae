@@ -1,12 +1,5 @@
 package org.game;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import javax.swing.plaf.basic.BasicSliderUI;
 import java.awt.*;
 import java.awt.geom.RoundRectangle2D;
 import java.io.FileWriter;
@@ -15,23 +8,32 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.plaf.basic.BasicSliderUI;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 
 public class Slider extends JSlider implements ChangeListener {
 
     MusicPlayer player;
 
     Slider(MusicPlayer player){
-        setPreferredSize(new Dimension(400, 200));
-        setPaintTicks(true);
+        setPreferredSize(new Dimension(400, 80));
+        setPaintTicks(false);
         setPaintTrack(true);
         setOpaque(false);
         setMinorTickSpacing(10);
         setMajorTickSpacing(20);
-        setPaintLabels(true);
+        setPaintLabels(false);
         setBackground(Color.ORANGE);
 
         addChangeListener(this);
         this.player = player;
+
+        
 
     }
 
@@ -120,11 +122,11 @@ public class Slider extends JSlider implements ChangeListener {
             boolean inverted = slider.getInverted();
 
             // Paint shadow.
-            g2.setColor(new Color(170, 170 ,170));
+            g2.setColor(new Color(170, 170, 170));
             g2.fill(trackShape);
 
             // Paint track background.
-            g2.setColor(new Color(200, 200 ,200));
+            g2.setColor(new Color(200, 200, 200));
             g2.setClip(trackShape);
             trackShape.y += 1;
             g2.fill(trackShape);
@@ -135,7 +137,9 @@ public class Slider extends JSlider implements ChangeListener {
             // Paint selected track.
             if (horizontal) {
                 boolean ltr = slider.getComponentOrientation().isLeftToRight();
-                if (ltr) inverted = !inverted;
+                if (ltr) {
+                    inverted = !inverted;
+                }
                 int thumbPos = thumbRect.x + thumbRect.width / 2;
                 if (inverted) {
                     g2.clipRect(0, 0, thumbPos, slider.getHeight());
@@ -151,15 +155,29 @@ public class Slider extends JSlider implements ChangeListener {
                     g2.clipRect(0, thumbPos, slider.getWidth(), slider.getHeight() - thumbPos);
                 }
             }
-            g2.setColor(Color.ORANGE);
+            g2.setColor(Color.decode("0xa1c1ff"));
             g2.fill(trackShape);
             g2.setClip(clip);
         }
 
         @Override
         public void paintThumb(final Graphics g) {
-            g.setColor(new Color(246, 146, 36));
-            g.fillOval(thumbRect.x, thumbRect.y, thumbRect.width, thumbRect.height);
+            Graphics2D g2 = (Graphics2D) g.create();
+
+            g2.setColor(Color.decode("0x85A4E4"));
+            g2.fillOval(thumbRect.x, thumbRect.y, thumbRect.width, thumbRect.height);
+
+            String value = String.valueOf(slider.getValue());
+            g2.setFont(new Font("Arial", Font.BOLD, 15));
+            g2.setColor(Color.BLACK);
+
+            if (slider.getOrientation() == JSlider.HORIZONTAL) {
+                g2.drawString(value, thumbRect.x + thumbRect.width + 5, thumbRect.y + thumbRect.height / 2 - 10);
+            } else {
+                g2.drawString(value, thumbRect.x + thumbRect.width / 2 - 5, thumbRect.y - 5);
+            }
+
+            g2.dispose();
         }
 
         @Override

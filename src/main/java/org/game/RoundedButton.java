@@ -86,7 +86,7 @@ public class RoundedButton extends JButton {
         setBorderPainted(false);
         setFocusPainted(false);
         setFocusable(false);
-        selected=false;
+        selected = false;
 
         colourOver = Color.GREEN;
         colourClick = Color.ORANGE;
@@ -104,7 +104,9 @@ public class RoundedButton extends JButton {
 
             @Override
             public void mouseExited(MouseEvent me) {
-                if(selected) borderColour = Color.ORANGE;
+                if (selected) {
+                    borderColour = Color.ORANGE;
+                }
                 setBackground(bgColour);
                 repaint();
                 over = false;
@@ -121,7 +123,9 @@ public class RoundedButton extends JButton {
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
         g2.setColor(borderColour);
-        if(selected) g2.fillRoundRect(0, 0, getWidth(), getHeight(), radius, radius);
+        if (selected) {
+            g2.fillRoundRect(0, 0, getWidth(), getHeight(), radius, radius);
+        }
         g2.setColor(getBackground());
 
         g2.fillRoundRect(3, 3, getWidth() - 6, getHeight() - 6, radius, radius);

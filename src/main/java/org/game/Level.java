@@ -1,22 +1,20 @@
 package org.game;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import javax.swing.*;
-import javax.swing.border.LineBorder;
 import java.awt.*;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Scanner;
 import java.util.Set;
+import javax.swing.*;
+import javax.swing.border.LineBorder;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 
 public class Level {
     JSONArray levelsArray;
@@ -62,7 +60,7 @@ public class Level {
         gameFrame.setLayout(null);
         fieldPanel = new JPanel();
         fieldPanel.setLayout(new GridLayout(size, size));
-        fieldPanel.setBounds(107,89,350,350);
+        fieldPanel.setBounds(107, 89, 350, 350);
         fieldPanel.setOpaque(false);
 
         colourPanel = new JPanel();
@@ -112,15 +110,18 @@ public class Level {
             RoundedButton palette = new RoundedButton();
             palette.setRadius(500);
             palette.setText(String.valueOf(id));
-            if(id==1){
-                palette.selected=true;
+            if (id == 1) {
+                palette.selected = true;
                 palette.setBgColour(Color.ORANGE);
 
             }
-            final int idx=id-1;
-            if(idx%2==0) palette.setBgColour(Color.decode("0x85A4E4"));
-            else palette.setBgColour(Color.WHITE);
-            palette.setPreferredSize(new Dimension(350/size, 350/size));
+            final int idx = id - 1;
+            if (idx % 2 == 0)  {
+                palette.setBgColour(Color.decode("0x85A4E4"));
+            } else {
+                palette.setBgColour(Color.WHITE);
+            }
+            palette.setPreferredSize(new Dimension(350 / size, 350 / size));
             palette.addActionListener(e -> chooseColour(idx));
             colourPanel.add(palette);
             colourArray.add(palette);
@@ -128,7 +129,7 @@ public class Level {
 
         for (int r = 0; r < size; r++) {
             JSONArray row = tiles.getJSONArray(r);
-            for(int c = 0; c < size; c++){
+            for (int c = 0; c < size; c++) {
                 JButton cell = new JButton();
                 cell.setFont(new Font("Calibri", Font.PLAIN, 25));
                 cell.setFocusable(false);
@@ -136,11 +137,11 @@ public class Level {
                 cell.setForeground(Color.WHITE);
 
 
-                if(fixed.getJSONArray(r).getInt(c)==1){
+                if (fixed.getJSONArray(r).getInt(c) == 1) {
                     filledTiles++;
                     cell.setEnabled(false);
                     cell.setText(String.valueOf(row.getInt(c)));
-                }else{
+                } else {
                     int finalR = r;
                     int finalC = c;
                     cell.addActionListener(e -> changeCell(cell, finalR, finalC));
@@ -159,25 +160,27 @@ public class Level {
 
     void chooseColour(int id){
         //colourPanel.
-        for(RoundedButton button : colourArray){
-            button.selected=false;
+        for (RoundedButton button : colourArray) {
+            button.selected = false;
             button.setBorderColour(Color.GRAY);
         }
-        colourArray.get(id).selected=true;
+        colourArray.get(id).selected = true;
         colourArray.get(id).setBorderColour(Color.ORANGE);
         colourPanel.repaint();
-        currentCell=id+1;
+        currentCell = id+1;
     }
 
     void changeCell(JButton cell, int r, int c){
-        if(!cell.getText().equals(String.valueOf(currentCell))){
-            if(cell.getText().isEmpty()) filledTiles++;
+        if (!cell.getText().equals(String.valueOf(currentCell))) {
+            if (cell.getText().isEmpty()) {
+                filledTiles++;
+            }
             cell.setText(String.valueOf(currentCell));
             tiles.getJSONArray(r).put(c, currentCell);
-            if(filledTiles==size*size){
+            if (filledTiles == size * size) {
                 checkSolution();
             }
-        }else{
+        } else {
             cell.setText("");
             filledTiles--;
             tiles.getJSONArray(r).put(c, 0);
@@ -187,42 +190,42 @@ public class Level {
 
     void checkSolution(){
 
-        for(int r = 0; r < size; r++){
+        for (int r = 0; r < size; r++) {
             JSONArray row = tiles.getJSONArray(r);
             Set<Object> colours = new HashSet<>();
-            for(int c = 0; c < size; c++){
+            for (int c = 0; c < size; c++) {
                 colours.add(row.getInt(c));
             }
-            if(colours.size() < size){
+            if (colours.size() < size) {
                 return;
             }
         }
-        for(int c = 0; c < size; c++){
+        for (int c = 0; c < size; c++) {
             Set<Object> colours = new HashSet<>();
-            for(int r = 0; r < size; r++){
+            for (int r = 0; r < size; r++) {
                 colours.add(tiles.getJSONArray(r).getInt(c));
             }
-            if(colours.size() < size){
+            if (colours.size() < size) {
                 return;
             }
         }
 
         ArrayList<Set<Object>> colours = new ArrayList<>();
-        for(int i = 0; i < size; i++){
+        for (int i = 0; i < size; i++) {
             colours.add(new HashSet<>());
         }
 
-        for(int r = 0; r < size; r++){
+        for (int r = 0; r < size; r++) {
             JSONArray row = tiles.getJSONArray(r);
             JSONArray regionRow = regions.getJSONArray(r);
-            for(int c = 0; c < size; c++){
+            for (int c = 0; c < size; c++) {
                 int colour = row.getInt(c);
                 int region = regionRow.getInt(c);
                 colours.get(region).add(colour);
             }
         }
-        for(int region = 0; region < size; region++){
-            if(colours.get(region).size()!=size){
+        for (int region = 0; region < size; region++) {
+            if (colours.get(region).size() != size) {
                 return;
             }
         }

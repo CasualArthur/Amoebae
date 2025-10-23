@@ -32,8 +32,8 @@ public class ColourTheme {
     }
 
     public int colourToId(Color colour, int size){
-        for(int c = 0; c < size; c++){
-            if(Color.decode(theme.getString(c)).equals(colour)){
+        for (int c = 0; c < size; c++){
+            if (Color.decode(theme.getString(c)).equals(colour)) {
                 return c;
             }
         }
