@@ -32,7 +32,6 @@ public class Level {
     public GameFrame gameFrame;
     JPanel fieldPanel;
     JPanel colourPanel;
-    JPanel backPanel;
     JPanel extraPanel;
     boolean completed;
     JWindow window;
@@ -82,7 +81,7 @@ public class Level {
         backButton.setPreferredSize(new Dimension(140, 58));
         backButton.setBgColour(Color.WHITE);
 
-        backButton.addActionListener(e -> {
+        backButton.addActionListener(_ -> {
             window.setVisible(false);
             gameFrame.displayLevels();
         });
@@ -93,7 +92,7 @@ public class Level {
         resetButton.setPreferredSize(new Dimension(140, 58));
         resetButton.setText("Reset");
         resetButton.setBgColour(Color.WHITE);
-        resetButton.addActionListener(e -> {
+        resetButton.addActionListener(_ -> {
             try {
                 window.setVisible(false);
                 gameFrame.displayLevel(levelId);
@@ -102,8 +101,6 @@ public class Level {
             }
         });
         extraPanel.add(resetButton);
-
-
         colourArray = new ArrayList<>();
 
         for(int id = 1; id <= size; id++){
@@ -113,7 +110,6 @@ public class Level {
             if (id == 1) {
                 palette.selected = true;
                 palette.setBgColour(Color.ORANGE);
-
             }
             final int idx = id - 1;
             if (idx % 2 == 0)  {
@@ -122,7 +118,7 @@ public class Level {
                 palette.setBgColour(Color.WHITE);
             }
             palette.setPreferredSize(new Dimension(350 / size, 350 / size));
-            palette.addActionListener(e -> chooseColour(idx));
+            palette.addActionListener(_ -> chooseColour(idx));
             colourPanel.add(palette);
             colourArray.add(palette);
         }
@@ -133,9 +129,7 @@ public class Level {
                 JButton cell = new JButton();
                 cell.setFont(new Font("Calibri", Font.PLAIN, 25));
                 cell.setFocusable(false);
-                //cell.setText(html);
                 cell.setForeground(Color.WHITE);
-
 
                 if (fixed.getJSONArray(r).getInt(c) == 1) {
                     filledTiles++;
@@ -144,7 +138,7 @@ public class Level {
                 } else {
                     int finalR = r;
                     int finalC = c;
-                    cell.addActionListener(e -> changeCell(cell, finalR, finalC));
+                    cell.addActionListener(_ -> changeCell(cell, finalR, finalC));
                 }
                 cell.setBackground(colourTheme.idToColour(regions.getJSONArray(r).getInt(c)));
                 cell.setBorder(new LineBorder(Color.BLACK));
@@ -159,7 +153,6 @@ public class Level {
     }
 
     void chooseColour(int id){
-        //colourPanel.
         for (RoundedButton button : colourArray) {
             button.selected = false;
             button.setBorderColour(Color.GRAY);
@@ -185,7 +178,6 @@ public class Level {
             filledTiles--;
             tiles.getJSONArray(r).put(c, 0);
         }
-
     }
 
     void checkSolution(){
@@ -239,7 +231,8 @@ public class Level {
             int id = levelId;
             level.put("completed", true);
             levelsArray.put(id, level);
-            FileWriter writer = new FileWriter("src/main/resources/Levels.json", false);
+            FileWriter writer = new FileWriter(
+                    "src/main/resources/Levels.json", false);
             writer.write(levelsArray.toString());
             writer.close();
         }
@@ -249,11 +242,11 @@ public class Level {
         }
 
         JPanel panel = new JPanel();
-        JLabel salut = new JLabel("Level complete!");
-        salut.setFont(new Font("Calibri", Font.PLAIN, 25));
+        JLabel salute = new JLabel("Level complete!");
+        salute.setFont(new Font("Calibri", Font.PLAIN, 25));
         panel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         panel.setBackground(Color.WHITE);
-        panel.add(salut);
+        panel.add(salute);
         window.add(panel);
 
         window.setVisible(true);

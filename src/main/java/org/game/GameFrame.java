@@ -1,6 +1,5 @@
 package org.game;
 
-
 import java.awt.*;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -14,34 +13,31 @@ import javax.swing.border.LineBorder;
 import org.json.*;
 
 public class GameFrame extends JFrame {
-    MusicPlayer play;
+    MusicPlayer player;
     ArrayList<RoundedButton> buttons;
     int themeId;
     int volume;
     boolean isPlaying;
     Slider slider;
 
-    GameFrame(MusicPlayer play) throws IOException {
+    GameFrame(MusicPlayer player) {
         this.setTitle("Amoebae");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setLayout(null);
         this.setSize(576,576);
         this.setResizable(false);
         this.setLocationRelativeTo(null);
-        this.play = play;
+        this.player = player;
 
-        slider = new Slider(play) {
+        slider = new Slider(player) {
             @Override
             public void updateUI() {
                 setUI(new Slider.CustomSliderUI(this));
             }
         };
-
-        //slider.setValue(volume);
     }
 
     void displayMenu() throws IOException {
-
         this.getContentPane().removeAll();
         this.repaint();
         this.setLayout(null);
@@ -52,13 +48,13 @@ public class GameFrame extends JFrame {
         playButton.setText("Play");
         playButton.setBackground(Color.decode("0x85A4E4"));
         playButton.bgColour = Color.decode("0x85A4E4");
-        playButton.addActionListener(e -> this.displayLevels());
+        playButton.addActionListener(_ -> this.displayLevels());
 
         RoundedButton settingsButton = new RoundedButton();
         settingsButton.setPreferredSize(new Dimension(200, 100));
         settingsButton.setRadius(20);
         settingsButton.setText("Settings");
-        settingsButton.addActionListener(e -> {
+        settingsButton.addActionListener(_ -> {
             try {
                 this.displaySettings();
             } catch (IOException ex) {
@@ -72,11 +68,17 @@ public class GameFrame extends JFrame {
         rulesButton.setText("Rules");
         rulesButton.setBackground(Color.decode("0x85A4E4"));
         rulesButton.bgColour = Color.decode("0x85A4E4");
-        rulesButton.addActionListener(e -> this.displayRules());
+        rulesButton.addActionListener(_ -> {
+            try {
+                this.displayRules();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
 
         JLabel label = new JLabel("Amoebae");
-        label.setFont(new Font("Calibri", Font.PLAIN, 50));
-        label.setBounds(128, 84, 300, 50);
+        label.setFont(new Font("Algerian", Font.BOLD, 60));
+        label.setBounds(128, 90, 300, 50);
         label.setHorizontalAlignment(JLabel.CENTER);
 
         JPanel buttonPanel = new JPanel();
@@ -101,16 +103,8 @@ public class GameFrame extends JFrame {
         if (!isPlaying) {
             isPlaying = true;
 
-            Main.playMusic();
+            player.playMusic();
         }
-
-        Path path = Paths.get("src/main/resources/Preferences.json");
-        String content = Files.readString(path, StandardCharsets.UTF_8);
-        JSONArray preferences = new JSONArray(content);
-
-        volume = preferences.getJSONObject(0).getInt("volume");
-        slider.setValue(volume);
-
     }
 
     void displayLevels(){
@@ -119,8 +113,15 @@ public class GameFrame extends JFrame {
         this.setLayout(null);
 
         try {
-            Path path = Paths.get("src/main/resources/Levels.json");
+            Path path = Paths.get("src/main/resources/Preferences.json");
             String content = Files.readString(path, StandardCharsets.UTF_8);
+            JSONArray preferences = new JSONArray(content);
+
+            volume = preferences.getJSONObject(0).getInt("volume");
+            slider.setValue(volume);
+
+            path = Paths.get("src/main/resources/Levels.json");
+            content = Files.readString(path, StandardCharsets.UTF_8);
             JSONArray levelsArray = new JSONArray(content);
 
             JPanel backPanel = new JPanel();
@@ -132,7 +133,7 @@ public class GameFrame extends JFrame {
             backButton.setPreferredSize(new Dimension(140, 58));
             backButton.setText("Back");
             backButton.bgColour = Color.WHITE;
-            backButton.addActionListener(e -> {
+            backButton.addActionListener(_ -> {
                 try {
                     this.displayMenu();
                 } catch (IOException ex) {
@@ -168,7 +169,7 @@ public class GameFrame extends JFrame {
                 }
                 levelButton.setBorder(new LineBorder(Color.BLACK));
                 final int id = i;
-                levelButton.addActionListener(e -> {
+                levelButton.addActionListener(_ -> {
                     try {
                         this.displayLevel(id);
                     } catch (IOException ex) {
@@ -178,10 +179,12 @@ public class GameFrame extends JFrame {
 
                 levelPanel.add(levelButton);
 
-                String size = "Board size: " + level.getInt("size") + "x" + level.getInt("size");
+                String size = "Board size: " +
+                        level.getInt("size") + "x" + level.getInt("size");
                 String difficulty = "Difficulty: " + level.getString("difficulty");
                 String completed = "Completed: " + level.getBoolean("completed");
-                JLabel extra = new JLabel("<html>"+size+"<br/>"+difficulty+"<br/>"+completed+"<br/></html>");
+                JLabel extra = new JLabel(
+                        "<html>"+size+"<br/>"+difficulty+"<br/>"+completed+"<br/></html>");
                 extra.setFont(new Font("Calibri", Font.BOLD, 20));
                 extraPanel.add(extra);
             }
@@ -202,7 +205,6 @@ public class GameFrame extends JFrame {
         Level level = new Level(id);
         level.gameFrame = this;
         level.display();
-
     }
 
     void displaySettings() throws IOException {
@@ -219,7 +221,7 @@ public class GameFrame extends JFrame {
         backButton.setPreferredSize(new Dimension(140, 58));
         backButton.setText("Back");
         backButton.bgColour = Color.WHITE;
-        backButton.addActionListener(e -> {
+        backButton.addActionListener(_ -> {
             try {
                 this.displayMenu();
             } catch (IOException ex) {
@@ -227,31 +229,6 @@ public class GameFrame extends JFrame {
             }
         });
         backPanel.add(backButton);
-
-        /*
-        RoundedButton volume0 = new RoundedButton();
-        volume0.setRadius(20);
-        volume0.setPreferredSize(new Dimension(140, 58));
-        volume0.setText("Volume: 0%");
-        volume0.bgColour=Color.WHITE;
-        volume0.addActionListener(e -> play.changeVolume(0));
-        RoundedButton volume50 = new RoundedButton();
-        volume50.setRadius(20);
-        volume50.setPreferredSize(new Dimension(140, 58));
-        volume50.setText("volume: 50%");
-        volume50.bgColour=Color.WHITE;
-        volume50.addActionListener(e -> play.changeVolume(50));
-        RoundedButton volume100 = new RoundedButton();
-        volume100.setRadius(20);
-        volume100.setPreferredSize(new Dimension(140, 58));
-        volume100.setText("volume: 100%");
-        volume100.bgColour=Color.WHITE;
-        volume100.addActionListener(e -> play.changeVolume(100));
-        */
-        //Slider slider = new Slider(play);
-
-
-
 
         Path path = Paths.get("src/main/resources/Preferences.json");
         String content = Files.readString(path, StandardCharsets.UTF_8);
@@ -261,26 +238,13 @@ public class GameFrame extends JFrame {
         content = Files.readString(path, StandardCharsets.UTF_8);
         JSONArray themes = new JSONArray(content);
 
-        /*for(int i=0; i<themes.length(); i++){
-            JPanel colourPanel = new JPanel();
-            RoundedButton selection = new RoundedButton();
-            if(==i){
-                selection.setBgColour(Color.ORANGE);
-                selection.selected=true;
-            }
-            for(int i=0; i<3; i++){
-                RoundedButton btn = new RoundedButton();
-                btn.setRadius(500);
-            }
-        }*/
-
 
         JPanel settingsPanel = new JPanel();
         settingsPanel.setBounds(88, 100, 400, 400);
         settingsPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
 
         JPanel themePanel = new JPanel();
-        themePanel.setBounds(88, 300, 400, 400);
+        themePanel.setBounds(88, 270, 400, 400);
         themePanel.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
 
         themeId = preferences.getJSONObject(0).getInt("theme");
@@ -300,23 +264,21 @@ public class GameFrame extends JFrame {
         switchTheme.setText("Switch theme");
         switchTheme.setRadius(20);
         switchTheme.setPreferredSize(new Dimension(200, 60));
-        switchTheme.addActionListener(e -> switchTheme(themes.length()));
+        switchTheme.addActionListener(_ -> switchTheme(themes.length()));
 
-        //settingsPanel.setLayout(new GridLayout(3,1, 30, 30));
-        settingsPanel.add(new JLabel("Volume")).setFont(new Font("Calibri", Font.BOLD, 30));;
+        settingsPanel.add(new JLabel("Volume")).setFont(
+                new Font("Calibri", Font.BOLD, 30));
         settingsPanel.add(slider);
-        themePanel.add(new JLabel("Theme")).setFont(new Font("Calibri", Font.PLAIN, 25));
+        settingsPanel.add(new JLabel("Theme")).setFont(
+                new Font("Calibri", Font.BOLD, 30));
         for (int i = 0; i < 3; i++) {
             themePanel.add(buttons.get(i));
         }
         themePanel.add(switchTheme);
 
-
-
         settingsPanel.setOpaque(false);
         backPanel.setOpaque(false);
         themePanel.setOpaque(false);
-
 
         this.add(settingsPanel);
         this.add(backPanel);
@@ -325,10 +287,17 @@ public class GameFrame extends JFrame {
 
     }
 
-    void displayRules(){
+    void displayRules() throws IOException {
         this.getContentPane().removeAll();
         this.repaint();
         this.setLayout(null);
+
+        Path path = Paths.get("src/main/resources/Preferences.json");
+        String content = Files.readString(path, StandardCharsets.UTF_8);
+        JSONArray preferences = new JSONArray(content);
+
+        volume = preferences.getJSONObject(0).getInt("volume");
+        slider.setValue(volume);
 
         JPanel backPanel = new JPanel();
         backPanel.setLayout(new GridBagLayout());
@@ -339,7 +308,7 @@ public class GameFrame extends JFrame {
         backButton.setPreferredSize(new Dimension(140, 58));
         backButton.setText("Back");
         backButton.bgColour = Color.WHITE;
-        backButton.addActionListener(e -> {
+        backButton.addActionListener(_ -> {
             try {
                 this.displayMenu();
             } catch (IOException ex) {
@@ -348,34 +317,35 @@ public class GameFrame extends JFrame {
         });
         backPanel.add(backButton);
 
-
         JLabel rules = new JLabel("Rules");
         rules.setFont(new Font("Calibri", Font.PLAIN, 100));
-        //rules.setForeground(Color.decode("#d9f3fc"));
         rules.setBounds(170, 0, 300, 100);
 
+        JLabel explanation = getJLabel();
+
+        this.add(rules);
+        this.add(explanation);
+        this.add(backPanel);
+        this.setVisible(true);
+    }
+
+    private static JLabel getJLabel() {
         JLabel explanation = new JLabel();
-        explanation.setText( "<html> • In each row, column and region all numbers must be distinct. " +
-                "<br> • Place a number in each cell to complete the board, by selecting one on the right hand side and applying it to a cell. " +
+        explanation.setText(
+                "<html> • In each row, column and region all numbers must be distinct. " +
+                "<br> • Place a number in each cell to complete the board, " +
+                "by selecting one on the right hand side and applying it to a cell. " +
                 "<br> • There is exactly one possible solution per board. " +
                 "<br> • You can reset any board by pressing the reset button.  </html>");
         explanation.setFont(new Font("Calibri", Font.BOLD, 27));
 
         explanation.setBounds(100, 100, 400, 350);
         explanation.setVerticalAlignment(JLabel.TOP);
-
-
-        this.add(rules);
-        this.add(explanation);
-        this.add(backPanel);
-        this.setVisible(true);
-
+        return explanation;
     }
 
     void switchTheme(int numberOfThemes){
         try {
-            //level.put("completed", true);
-            //levelsArray.put(id, level);
             themeId++;
             if (themeId == numberOfThemes) {
                 themeId = 0;

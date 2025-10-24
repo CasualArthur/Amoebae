@@ -32,16 +32,13 @@ public class Slider extends JSlider implements ChangeListener {
 
         addChangeListener(this);
         this.player = player;
-
-        
-
     }
 
     @Override
     public void stateChanged(ChangeEvent e) {
         player.changeVolume(getValue());
         Path path = Paths.get("src/main/resources/Preferences.json");
-        String content = null;
+        String content;
         try {
             content = Files.readString(path, StandardCharsets.UTF_8);
         } catch (IOException ex) {
@@ -54,14 +51,14 @@ public class Slider extends JSlider implements ChangeListener {
         preferences.put(0, list);
 
         try {
-            FileWriter writer = new FileWriter("src/main/resources/Preferences.json", false);
+            FileWriter writer = new FileWriter(
+                    "src/main/resources/Preferences.json", false);
             writer.write(preferences.toString());
             writer.close();
         } catch (IOException ex) {
             throw new RuntimeException(ex);
         }
     }
-
 
     static class CustomSliderUI extends BasicSliderUI {
 
@@ -85,7 +82,8 @@ public class Slider extends JSlider implements ChangeListener {
                 trackRect.x = trackRect.x + (trackRect.width - TRACK_WIDTH) / 2;
                 trackRect.width = TRACK_WIDTH;
             }
-            trackShape.setRoundRect(trackRect.x, trackRect.y, trackRect.width, trackRect.height, TRACK_ARC, TRACK_ARC);
+            trackShape.setRoundRect(trackRect.x, trackRect.y,
+                    trackRect.width, trackRect.height, TRACK_ARC, TRACK_ARC);
         }
 
         @Override
@@ -109,7 +107,8 @@ public class Slider extends JSlider implements ChangeListener {
 
         @Override
         public void paint(final Graphics g, final JComponent c) {
-            ((Graphics2D) g).setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            ((Graphics2D) g).setRenderingHint(
+                    RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             super.paint(g, c);
         }
 
@@ -121,11 +120,9 @@ public class Slider extends JSlider implements ChangeListener {
             boolean horizontal = isHorizontal();
             boolean inverted = slider.getInverted();
 
-            // Paint shadow.
             g2.setColor(new Color(170, 170, 170));
             g2.fill(trackShape);
 
-            // Paint track background.
             g2.setColor(new Color(200, 200, 200));
             g2.setClip(trackShape);
             trackShape.y += 1;
@@ -134,7 +131,6 @@ public class Slider extends JSlider implements ChangeListener {
 
             g2.setClip(clip);
 
-            // Paint selected track.
             if (horizontal) {
                 boolean ltr = slider.getComponentOrientation().isLeftToRight();
                 if (ltr) {
@@ -144,7 +140,8 @@ public class Slider extends JSlider implements ChangeListener {
                 if (inverted) {
                     g2.clipRect(0, 0, thumbPos, slider.getHeight());
                 } else {
-                    g2.clipRect(thumbPos, 0, slider.getWidth() - thumbPos, slider.getHeight());
+                    g2.clipRect(thumbPos, 0,
+                            slider.getWidth() - thumbPos, slider.getHeight());
                 }
 
             } else {
@@ -152,7 +149,8 @@ public class Slider extends JSlider implements ChangeListener {
                 if (inverted) {
                     g2.clipRect(0, 0, slider.getHeight(), thumbPos);
                 } else {
-                    g2.clipRect(0, thumbPos, slider.getWidth(), slider.getHeight() - thumbPos);
+                    g2.clipRect(0, thumbPos,
+                            slider.getWidth(), slider.getHeight() - thumbPos);
                 }
             }
             g2.setColor(Color.decode("0xa1c1ff"));
@@ -172,9 +170,12 @@ public class Slider extends JSlider implements ChangeListener {
             g2.setColor(Color.BLACK);
 
             if (slider.getOrientation() == JSlider.HORIZONTAL) {
-                g2.drawString(value, thumbRect.x + thumbRect.width + 5, thumbRect.y + thumbRect.height / 2 - 10);
+                g2.drawString(value,
+                        thumbRect.x + thumbRect.width + 5,
+                        thumbRect.y + thumbRect.height / 2 - 10);
             } else {
-                g2.drawString(value, thumbRect.x + thumbRect.width / 2 - 5, thumbRect.y - 5);
+                g2.drawString(value,
+                        thumbRect.x + thumbRect.width / 2 - 5, thumbRect.y - 5);
             }
 
             g2.dispose();

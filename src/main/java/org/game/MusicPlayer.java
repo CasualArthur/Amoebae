@@ -4,11 +4,8 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.FloatControl;
-import javax.sound.sampled.LineEvent;
-import javax.sound.sampled.LineListener;
 import javax.swing.*;
 import java.io.*;
-import java.net.URL;
 
 class MusicPlayer {
 
@@ -29,17 +26,14 @@ class MusicPlayer {
             clip.start();
             System.out.println(clip.getMicrosecondLength());
             Thread.sleep(clip.getMicrosecondLength() / 1000);
-            clip.addLineListener(new LineListener() {
-                @Override
-                public void update(LineEvent event) {
-                    try {
-                        clip.loop(Clip.LOOP_CONTINUOUSLY);
-                        clip.start();
-                        Thread.sleep(clip.getMicrosecondLength() / 1000);
-                    }
-                    catch (Exception e)  {
-                        e.printStackTrace();
-                    }
+            clip.addLineListener(_ -> {
+                try {
+                    clip.loop(Clip.LOOP_CONTINUOUSLY);
+                    clip.start();
+                    Thread.sleep(clip.getMicrosecondLength() / 1000);
+                }
+                catch (Exception e)  {
+                    e.printStackTrace();
                 }
             });
 
@@ -49,8 +43,6 @@ class MusicPlayer {
         }
     }
     void changeVolume(float volumePercent){
-        //clip.stop();
-        //clip.flush();
         FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
 
         volumePercent = Math.max(0, Math.min(volumePercent, 100));
@@ -63,12 +55,5 @@ class MusicPlayer {
             dB = Math.max(dB, gainControl.getMinimum());
             gainControl.setValue(dB);
         }
-        //clip.loop(Clip.LOOP_CONTINUOUSLY);
     }
-
-    int getVolume(){
-        FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
-        return (int) (100.0 * gainControl.getValue());
-    }
-
 }
