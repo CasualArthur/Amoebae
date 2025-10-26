@@ -4,56 +4,86 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.FloatControl;
-import javax.swing.*;
 import java.io.*;
 
+/**
+ * Manages background music playback for the game.
+ * Handles loading, playing, looping, and volume control of audio.
+ */
 class MusicPlayer {
 
-    Clip clip;
-    void playMusic(){
-        try  {
-            InputStream is = GameFrame.class.getClassLoader().getResourceAsStream("PlaceholderSong.wav");
-            if (is == null) {
+    private Clip audioClip;
+
+    /**
+     * Loads and plays the background music track.
+     * The music will loop continuously after the initial playthrough.
+     * Starts with volume set to minimum (-80dB) by default.
+     */
+    void playMusic() {
+        try {
+            // Load audio file from resources
+            InputStream audioInputStream = GameFrame.class.getClassLoader()
+                    .getResourceAsStream("PlaceholderSong.wav");
+
+            if (audioInputStream == null) {
                 System.err.println("PlaceholderSong.wav not found");
                 return;
             }
-            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(is);
-            clip = AudioSystem.getClip();
-            clip.open(audioInputStream);
-            FloatControl gainControl =
-                    (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
-            gainControl.setValue(-80.0f);
-            clip.start();
-            System.out.println(clip.getMicrosecondLength());
-            Thread.sleep(clip.getMicrosecondLength() / 1000);
-            clip.addLineListener(_ -> {
+
+            // Create audio input stream and clip
+            AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioInputStream);
+            audioClip = AudioSystem.getClip();
+            audioClip.open(audioStream);
+
+            // Set initial volume to minimum
+            FloatControl volumeControl =
+                    (FloatControl) audioClip.getControl(FloatControl.Type.MASTER_GAIN);
+            volumeControl.setValue(-80.0f);
+
+            // Start playback
+            audioClip.start();
+            System.out.println(audioClip.getMicrosecondLength());
+            Thread.sleep(audioClip.getMicrosecondLength() / 1000);
+
+            // Add listener to loop music continuously
+            audioClip.addLineListener(_ -> {
                 try {
-                    clip.loop(Clip.LOOP_CONTINUOUSLY);
-                    clip.start();
-                    Thread.sleep(clip.getMicrosecondLength() / 1000);
-                }
-                catch (Exception e)  {
+                    audioClip.loop(Clip.LOOP_CONTINUOUSLY);
+                    audioClip.start();
+                    Thread.sleep(audioClip.getMicrosecondLength() / 1000);
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             });
 
-        }
-        catch (Exception e)  {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
-    void changeVolume(float volumePercent){
-        FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
 
-        volumePercent = Math.max(0, Math.min(volumePercent, 100));
+    /**
+     * Adjusts the volume of the currently playing music.
+     * Converts percentage-based volume to decibel scale for audio control.
+     *
+     * @param volumePercentage The desired volume level (0-100, where 0 is mute and 100 is maximum)
+     */
+    void changeVolume(float volumePercentage) {
+        FloatControl volumeControl =
+                (FloatControl) audioClip.getControl(FloatControl.Type.MASTER_GAIN);
 
-        if (volumePercent == 0) {
-            gainControl.setValue(gainControl.getMinimum()); // Silence
+        // Clamp volume to valid range
+        volumePercentage = Math.max(0, Math.min(volumePercentage, 100));
+
+        if (volumePercentage == 0) {
+            // Mute the audio
+            volumeControl.setValue(volumeControl.getMinimum());
         } else {
-            float dB = (float) (20.0 * Math.log10(volumePercent / 100.0));
+            // Convert percentage to decibels (logarithmic scale)
+            float volumeInDecibels = (float) (20.0 * Math.log10(volumePercentage / 100.0));
 
-            dB = Math.max(dB, gainControl.getMinimum());
-            gainControl.setValue(dB);
+            // Ensure decibel value is within valid range
+            volumeInDecibels = Math.max(volumeInDecibels, volumeControl.getMinimum());
+            volumeControl.setValue(volumeInDecibels);
         }
     }
 }

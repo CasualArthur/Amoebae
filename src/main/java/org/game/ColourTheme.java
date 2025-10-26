@@ -9,23 +9,34 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+/**
+ * Utility class for managing color themes in the game.
+ * Loads theme configurations from JSON files and maps region IDs to colours.
+ */
 public class ColourTheme {
-    int currentTheme = 0;
-    JSONArray theme;
 
+    /**
+     * Converts a region ID to its corresponding colour based on the current theme.
+     * Loads the active theme from user preferences and returns the colour for the specified region.
+     *
+     * @param regionId The ID of the region (0-based index into theme colours array)
+     * @return The Colour object corresponding to the region ID in the current theme
+     * @throws IOException If there's an error reading the theme or preferences files
+     */
+    public static Color idToColour(int regionId) throws IOException {
+        // Load available themes
+        Path themesPath = Paths.get("src/main/resources/Themes.json");
+        String themesContent = Files.readString(themesPath, StandardCharsets.UTF_8);
+        JSONArray themes = new JSONArray(themesContent);
 
-    public Color idToColour(int id) throws IOException {
-        Path path = Paths.get("src/main/resources/Themes.json");
-        String content = Files.readString(path, StandardCharsets.UTF_8);
-        JSONArray themes = new JSONArray(content);
+        // Load user preferences to get current theme
+        Path preferencesPath = Paths.get("src/main/resources/Preferences.json");
+        String preferencesContent = Files.readString(preferencesPath, StandardCharsets.UTF_8);
+        JSONArray preferences = new JSONArray(preferencesContent);
+        int currentThemeId = preferences.getJSONObject(0).getInt("theme");
 
-        path = Paths.get("src/main/resources/Preferences.json");
-        content = Files.readString(path, StandardCharsets.UTF_8);
-        JSONArray preferences = new JSONArray(content);
-        currentTheme = preferences.getJSONObject(0).getInt("theme");
-
-        theme = themes.getJSONObject(currentTheme).getJSONArray("colours");
-        return Color.decode(theme.getString(id));
+        // Get colors array for the current theme
+        JSONArray themeColours = themes.getJSONObject(currentThemeId).getJSONArray("colours");
+        return Color.decode(themeColours.getString(regionId));
     }
-
 }
