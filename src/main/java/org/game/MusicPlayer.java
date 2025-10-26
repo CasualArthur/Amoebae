@@ -46,18 +46,18 @@ class MusicPlayer {
             Thread.sleep(audioClip.getMicrosecondLength() / 1000);
 
             // Add listener to loop music continuously
-            audioClip.addLineListener(_ -> {
+            audioClip.addLineListener(e -> {
                 try {
                     audioClip.loop(Clip.LOOP_CONTINUOUSLY);
                     audioClip.start();
                     Thread.sleep(audioClip.getMicrosecondLength() / 1000);
-                } catch (Exception e) {
-                    e.printStackTrace();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
                 }
             });
 
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 

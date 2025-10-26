@@ -64,14 +64,14 @@ public class GameFrame extends JFrame {
         playButton.setText("Play");
         playButton.setBackground(Color.decode("0x85A4E4"));
         playButton.backgroundColour = Color.decode("0x85A4E4");
-        playButton.addActionListener(_ -> this.displayLevels());
+        playButton.addActionListener(e -> this.displayLevels());
 
         // Create Settings button
         RoundedButton settingsButton = new RoundedButton();
         settingsButton.setPreferredSize(new Dimension(200, 100));
         settingsButton.setRadius(20);
         settingsButton.setText("Settings");
-        settingsButton.addActionListener(_ -> {
+        settingsButton.addActionListener(e -> {
             try {
                 this.displaySettings();
             } catch (IOException ex) {
@@ -86,11 +86,11 @@ public class GameFrame extends JFrame {
         rulesButton.setText("Rules");
         rulesButton.setBackground(Color.decode("0x85A4E4"));
         rulesButton.backgroundColour = Color.decode("0x85A4E4");
-        rulesButton.addActionListener(_ -> {
+        rulesButton.addActionListener(e -> {
             try {
                 this.displayRules();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
             }
         });
 
@@ -161,7 +161,7 @@ public class GameFrame extends JFrame {
             backButton.setPreferredSize(new Dimension(140, 58));
             backButton.setText("Back");
             backButton.backgroundColour = Color.WHITE;
-            backButton.addActionListener(_ -> {
+            backButton.addActionListener(e -> {
                 try {
                     this.displayMenu();
                 } catch (IOException ex) {
@@ -207,7 +207,7 @@ public class GameFrame extends JFrame {
                 levelButton.setBorder(new LineBorder(Color.BLACK));
 
                 final int levelIndex = i;
-                levelButton.addActionListener(_ -> {
+                levelButton.addActionListener(e -> {
                     try {
                         this.displayLevel(levelIndex);
                     } catch (IOException ex) {
@@ -233,8 +233,8 @@ public class GameFrame extends JFrame {
             this.add(levelButtonsPanel);
             this.add(backPanel);
             this.setVisible(true);
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 
@@ -274,7 +274,7 @@ public class GameFrame extends JFrame {
         backButton.setPreferredSize(new Dimension(140, 58));
         backButton.setText("Back");
         backButton.backgroundColour = Color.WHITE;
-        backButton.addActionListener(_ -> {
+        backButton.addActionListener(e -> {
             try {
                 this.displayMenu();
             } catch (IOException ex) {
@@ -324,7 +324,7 @@ public class GameFrame extends JFrame {
         switchThemeButton.setText("Switch theme");
         switchThemeButton.setRadius(20);
         switchThemeButton.setPreferredSize(new Dimension(200, 60));
-        switchThemeButton.addActionListener(_ -> switchTheme(themes.length()));
+        switchThemeButton.addActionListener(e -> switchTheme(themes.length()));
 
         // Add volume controls
         settingsPanel.add(new JLabel("Volume")).setFont(
@@ -377,7 +377,7 @@ public class GameFrame extends JFrame {
         backButton.setPreferredSize(new Dimension(140, 58));
         backButton.setText("Back");
         backButton.backgroundColour = Color.WHITE;
-        backButton.addActionListener(_ -> {
+        backButton.addActionListener(e -> {
             try {
                 this.displayMenu();
             } catch (IOException ex) {
