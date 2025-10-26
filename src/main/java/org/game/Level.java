@@ -15,6 +15,8 @@ import javax.swing.border.LineBorder;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import static org.game.FileManager.getUserDataPath;
+
 /**
  * Represents a single game level with a puzzle board.
  * Manages the game logic, UI rendering, and solution validation for Sudoku-like puzzles
@@ -44,7 +46,7 @@ public class Level {
      * @throws IOException If there's an error reading the levels file
      */
     Level(int levelIndex) throws IOException {
-        Path levelsPath = Paths.get("src/main/resources/Levels.json");
+        Path levelsPath = getUserDataPath("Levels.json");
         String levelsContent = Files.readString(levelsPath, StandardCharsets.UTF_8);
         levelsArray = new JSONArray(levelsContent);
 
@@ -309,7 +311,7 @@ public class Level {
 
             // Save to file
             FileWriter writer = new FileWriter(
-                    "src/main/resources/Levels.json", false);
+                    getUserDataPath("Levels.json").toFile(), false);
             writer.write(levelsArray.toString());
             writer.close();
         } catch (IOException ie) {

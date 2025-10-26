@@ -12,6 +12,8 @@ import javax.swing.*;
 import javax.swing.border.LineBorder;
 import org.json.*;
 
+import static org.game.FileManager.getUserDataPath;
+
 /**
  * Main game window that manages the UI and navigation between different screens.
  * Handles the menu, level selection, settings, and rules displays.
@@ -139,7 +141,7 @@ public class GameFrame extends JFrame {
 
         try {
             // Load user preferences
-            Path preferencesPath = Paths.get("src/main/resources/Preferences.json");
+            Path preferencesPath = getUserDataPath("Preferences.json");
             String preferencesContent = Files.readString(preferencesPath, StandardCharsets.UTF_8);
             JSONArray preferences = new JSONArray(preferencesContent);
 
@@ -147,7 +149,7 @@ public class GameFrame extends JFrame {
             volumeSlider.setValue(musicVolume);
 
             // Load levels data
-            Path levelsPath = Paths.get("src/main/resources/Levels.json");
+            Path levelsPath = getUserDataPath("Levels.json");
             String levelsContent = Files.readString(levelsPath, StandardCharsets.UTF_8);
             JSONArray levelsArray = new JSONArray(levelsContent);
 
@@ -284,11 +286,11 @@ public class GameFrame extends JFrame {
         backPanel.add(backButton);
 
         // Load preferences and themes
-        Path preferencesPath = Paths.get("src/main/resources/Preferences.json");
+        Path preferencesPath = getUserDataPath("Preferences.json");
         String preferencesContent = Files.readString(preferencesPath, StandardCharsets.UTF_8);
         JSONArray preferences = new JSONArray(preferencesContent);
 
-        Path themesPath = Paths.get("src/main/resources/Themes.json");
+        Path themesPath = getUserDataPath("Themes.json");
         String themesContent = Files.readString(themesPath, StandardCharsets.UTF_8);
         JSONArray themes = new JSONArray(themesContent);
 
@@ -360,7 +362,7 @@ public class GameFrame extends JFrame {
         this.setLayout(null);
 
         // Load volume preference
-        Path preferencesPath = Paths.get("src/main/resources/Preferences.json");
+        Path preferencesPath = getUserDataPath("Preferences.json");
         String preferencesContent = Files.readString(preferencesPath, StandardCharsets.UTF_8);
         JSONArray preferences = new JSONArray(preferencesContent);
 
@@ -433,7 +435,7 @@ public class GameFrame extends JFrame {
             }
 
             // Load and update preferences
-            Path preferencesPath = Paths.get("src/main/resources/Preferences.json");
+            Path preferencesPath = getUserDataPath("Preferences.json");
             String preferencesContent = Files.readString(preferencesPath, StandardCharsets.UTF_8);
             JSONArray preferences = new JSONArray(preferencesContent);
 
@@ -442,12 +444,12 @@ public class GameFrame extends JFrame {
             preferences.put(0, preferencesObject);
 
             // Save updated preferences
-            FileWriter writer = new FileWriter("src/main/resources/Preferences.json", false);
+            FileWriter writer = new FileWriter(getUserDataPath("Preferences.json").toFile(), false);
             writer.write(preferences.toString());
             writer.close();
 
             // Load new theme and update colour preview buttons
-            Path themesPath = Paths.get("src/main/resources/Themes.json");
+            Path themesPath = getUserDataPath("Themes.json");
             String themesContent = Files.readString(themesPath, StandardCharsets.UTF_8);
             JSONArray themes = new JSONArray(themesContent);
 

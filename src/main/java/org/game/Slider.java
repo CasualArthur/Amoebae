@@ -15,6 +15,8 @@ import javax.swing.plaf.basic.BasicSliderUI;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import static org.game.FileManager.getUserDataPath;
+
 /**
  * A custom slider component for controlling music volume.
  * Automatically updates the music player and saves volume preferences when changed.
@@ -54,7 +56,7 @@ public class Slider extends JSlider implements ChangeListener {
         musicPlayer.changeVolume(getValue());
 
         // Load current preferences
-        Path preferencesPath = Paths.get("src/main/resources/Preferences.json");
+        Path preferencesPath = getUserDataPath("Preferences.json");
         String preferencesContent;
         try {
             preferencesContent = Files.readString(preferencesPath, StandardCharsets.UTF_8);
@@ -71,7 +73,7 @@ public class Slider extends JSlider implements ChangeListener {
         // Save updated preferences to file
         try {
             FileWriter writer = new FileWriter(
-                    "src/main/resources/Preferences.json", false);
+                    getUserDataPath("Preferences.json").toFile(), false);
             writer.write(preferences.toString());
             writer.close();
         } catch (IOException ex) {
