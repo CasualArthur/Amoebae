@@ -104,7 +104,7 @@ public class Level {
         backButton.setText("Back");
         backButton.setPreferredSize(new Dimension(140, 58));
         backButton.setBgColour(Color.WHITE);
-        backButton.addActionListener(_ -> {
+        backButton.addActionListener(e -> {
             completionPopup.setVisible(false);
             gameFrame.displayLevels();
         });
@@ -116,7 +116,7 @@ public class Level {
         resetButton.setPreferredSize(new Dimension(140, 58));
         resetButton.setText("Reset");
         resetButton.setBgColour(Color.WHITE);
-        resetButton.addActionListener(_ -> {
+        resetButton.addActionListener(e -> {
             try {
                 completionPopup.setVisible(false);
                 gameFrame.displayLevel(levelId);
@@ -148,7 +148,7 @@ public class Level {
             }
 
             numberButton.setPreferredSize(new Dimension(350 / boardSize, 350 / boardSize));
-            numberButton.addActionListener(_ -> selectNumber(buttonIndex));
+            numberButton.addActionListener(e -> selectNumber(buttonIndex));
             numberSelectorPanel.add(numberButton);
             numberSelectorButtons.add(numberButton);
         }
@@ -173,7 +173,7 @@ public class Level {
                     // Make cell editable
                     int finalRow = row;
                     int finalCol = col;
-                    cellButton.addActionListener(_ -> updateCell(cellButton, finalRow, finalCol));
+                    cellButton.addActionListener(e -> updateCell(cellButton, finalRow, finalCol));
                 }
 
                 // Set cell background colour based on region
