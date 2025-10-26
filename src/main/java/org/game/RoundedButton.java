@@ -52,7 +52,7 @@ public class RoundedButton extends JButton {
      * Sets up font, size, colours, and mouse hover behavior.
      */
     public RoundedButton() {
-        setFont(new Font("Calibri", Font.PLAIN, 25));
+        setFont(new Font("Calibri", Font.PLAIN, 20));
         setHorizontalTextPosition(JButton.CENTER);
         setVerticalTextPosition(JButton.CENTER);
         setPreferredSize(new Dimension(58, 58));
@@ -110,4 +110,5 @@ public class RoundedButton extends JButton {
 
         super.paintComponent(g);
     }
+
 }
