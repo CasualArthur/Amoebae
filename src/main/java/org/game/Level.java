@@ -23,7 +23,6 @@ import org.json.JSONObject;
 public class Level {
     JSONArray levelsArray;
     ArrayList<RoundedButton> numberSelectorButtons;
-    ArrayList<ImageIcon> numberImages;
     JSONObject levelData;
     int levelId;
     int boardSize;
@@ -36,7 +35,6 @@ public class Level {
     JPanel boardPanel;
     JPanel numberSelectorPanel;
     JPanel controlButtonsPanel;
-    boolean isCompleted;
     JWindow completionPopup;
 
     /**
@@ -49,7 +47,6 @@ public class Level {
         Path levelsPath = Paths.get("src/main/resources/Levels.json");
         String levelsContent = Files.readString(levelsPath, StandardCharsets.UTF_8);
         levelsArray = new JSONArray(levelsContent);
-        numberImages = new ArrayList<>();
 
         levelData = levelsArray.getJSONObject(levelIndex);
         levelId = levelData.getInt("id");
@@ -57,7 +54,6 @@ public class Level {
         boardState = levelData.getJSONArray("tiles");
         regionAssignments = levelData.getJSONArray("regions");
         fixedCells = levelData.getJSONArray("fixed");
-        isCompleted = levelData.getBoolean("completed");
 
         completionPopup = new JWindow(gameFrame);
         filledCellCount = 0;
@@ -73,23 +69,34 @@ public class Level {
     void display() throws IOException {
         gameFrame.setLayout(null);
 
+        // Set background image for the level screen
+        String resourcePath = "/images/planks.jpg";
+        java.net.URL imgURL = gameFrame.getClass().getResource(resourcePath);
+        if (imgURL != null) {
+            gameFrame.setContentPane(new JLabel(new ImageIcon(imgURL)));
+            gameFrame.setLayout(null);
+        }
+
         // Create the game board panel
         boardPanel = new JPanel();
         boardPanel.setLayout(new GridLayout(boardSize, boardSize));
         boardPanel.setBounds(107, 89, 350, 350);
         boardPanel.setOpaque(false);
+        boardPanel.setDoubleBuffered(true);
 
         // Create the number selector panel (right side)
         numberSelectorPanel = new JPanel();
         numberSelectorPanel.setLayout(new GridLayout(boardSize, 1, 0, -1));
         numberSelectorPanel.setBounds(480, 89, 350 / boardSize, 350);
         numberSelectorPanel.setOpaque(false);
+        numberSelectorPanel.setDoubleBuffered(true);
 
         // Create control buttons panel (back and reset)
         controlButtonsPanel = new JPanel();
         controlButtonsPanel.setLayout(new FlowLayout(FlowLayout.CENTER, 0, 0));
         controlButtonsPanel.setBounds(107, 460, 350, 58);
         controlButtonsPanel.setOpaque(false);
+        controlButtonsPanel.setDoubleBuffered(true);
 
         // Create Back button
         RoundedButton backButton = new RoundedButton();
@@ -97,7 +104,7 @@ public class Level {
         backButton.setText("Back");
         backButton.setPreferredSize(new Dimension(140, 58));
         backButton.setBgColour(Color.WHITE);
-        backButton.addActionListener(e -> {
+        backButton.addActionListener(_ -> {
             completionPopup.setVisible(false);
             gameFrame.displayLevels();
         });
@@ -109,7 +116,7 @@ public class Level {
         resetButton.setPreferredSize(new Dimension(140, 58));
         resetButton.setText("Reset");
         resetButton.setBgColour(Color.WHITE);
-        resetButton.addActionListener(e -> {
+        resetButton.addActionListener(_ -> {
             try {
                 completionPopup.setVisible(false);
                 gameFrame.displayLevel(levelId);
@@ -141,7 +148,7 @@ public class Level {
             }
 
             numberButton.setPreferredSize(new Dimension(350 / boardSize, 350 / boardSize));
-            numberButton.addActionListener(e -> selectNumber(buttonIndex));
+            numberButton.addActionListener(_ -> selectNumber(buttonIndex));
             numberSelectorPanel.add(numberButton);
             numberSelectorButtons.add(numberButton);
         }
@@ -154,6 +161,8 @@ public class Level {
                 cellButton.setFont(new Font("Calibri", Font.PLAIN, 25));
                 cellButton.setFocusable(false);
                 cellButton.setForeground(Color.WHITE);
+                cellButton.setOpaque(true);
+                cellButton.setContentAreaFilled(true);
 
                 // Check if this cell is fixed (pre-filled)
                 if (fixedCells.getJSONArray(row).getInt(col) == 1) {
@@ -164,10 +173,10 @@ public class Level {
                     // Make cell editable
                     int finalRow = row;
                     int finalCol = col;
-                    cellButton.addActionListener(e -> updateCell(cellButton, finalRow, finalCol));
+                    cellButton.addActionListener(_ -> updateCell(cellButton, finalRow, finalCol));
                 }
 
-                // Set cell background color based on region
+                // Set cell background colour based on region
                 cellButton.setBackground(ColourTheme.idToColour(
                         regionAssignments.getJSONArray(row).getInt(col)));
                 cellButton.setBorder(new LineBorder(Color.BLACK));
